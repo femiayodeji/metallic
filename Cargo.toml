@@ -6,9 +6,7 @@ edition = "2018"
 
 [dependencies]
 # the profile used for `cargo build`
-[profile.dev]
-panic = "abort" # disable stack unwinding on panic
+bootloader = "0.5.1"
 
-# the profile used for `cargo build --release`
-[profile.release]
-panic = "abort" # disable stack unwinding on panic
+[package.metadata.bootimage]
+default-target = "x86_64-metallic.json"
