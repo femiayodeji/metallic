@@ -5,8 +5,10 @@ authors = ["feminstincts <feminstincts@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-# the profile used for `cargo build`
-bootloader = "0.5.1"
+bootloader = "0.6.0"
 
 [package.metadata.bootimage]
 default-target = "x86_64-metallic.json"
+
+[target.'cfg(target_os = "none")']
+runner = "bootimage runner"
