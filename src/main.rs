@@ -7,8 +7,16 @@ mod vga_buffer;
 
 #[no_mangle] // don't mangle the name of this function
 pub extern "C" fn _start() -> ! {
-	println!("Welcome{} to {}", "!", "metallic");
-    
+	println!("====  ===  ===  ======   =====  ====  ===  ===   =====   =====  ======   ");    
+	println!("====  ==== ===  ==  ===  =====  ====  ==== ===  === ===  =====  ==  ===  ");    
+	println!(" ==   ========  ======    ===    ==   ========  ===       ===   ======   ");    
+	println!(" ==   ========   ======   ===    ==   ========  ===       ===    ======  ");    
+	println!("====  === ====  === ===   ===   ====  === ====  === ===   ===   === ===  ==  ==");    
+	println!("====  ===  ===   ======   ===   ====  ===  ===   =====    ===    ======  ==  ==");    
+	println!("");    
+	println!("");    
+	println!("Welcome{} to {}", "!", "metallic");    
+
     loop {}
 }
 
