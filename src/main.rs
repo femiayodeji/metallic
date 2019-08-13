@@ -7,14 +7,6 @@ mod vga_buffer;
 
 #[no_mangle] // don't mangle the name of this function
 pub extern "C" fn _start() -> ! {
-	println!("0000  000  000  000000   00000  0000  000  000   00000   00000  000000   ");    
-	println!("0000  0000 000  00  000  00000  0000  0000 000  000 000  00000  00  000  ");    
-	println!(" 00   00000000  000000    000    00   00000000  000       000   000000   ");    
-	println!(" 00   00000000   000000   000    00   00000000  000       000    000000  ");    
-	println!("0000  000 0000  000 000   000   0000  000 0000  000 000   000   000 000  00  00");    
-	println!("0000  000  000   000000   000   0000  000  000   00000    000    000000  00  00");    
-	println!("");    
-	println!("");    
 	println!("Welcome{} to {}", "!", "metallic");    
 
     loop {}
@@ -25,4 +17,16 @@ pub extern "C" fn _start() -> ! {
 fn panic(info: &PanicInfo) -> ! {
     println!("{}", info);
     loop {}
+}
+
+//test
+#![feature(custom_test_frameworks)]
+#![test_runner(crate::test_runner)]
+
+#[cfg(test)]
+fn test_runner(tests: &[&dyn Fn()]) {
+    println!("Running {} tests", tests.len());
+    for test in tests {
+        test();
+    }
 }
