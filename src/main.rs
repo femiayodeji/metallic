@@ -2,7 +2,7 @@
 #![no_main] // disable all Rust-level entry points
 
 //test
-![feature(custom_test_frameworks)]
+#![feature(custom_test_frameworks)]
 #![test_runner(metallic::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
