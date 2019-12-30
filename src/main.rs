@@ -11,16 +11,33 @@ use core::panic::PanicInfo;
 
 #[no_mangle] // don't mangle the name of this function
 pub extern "C" fn _start() -> ! {
+
 	println!("Welcome{} to {}", "!", "metallic");    
 
+    metallic::init();
+
+	// trigger a page fault
+    // unsafe {
+    //     *(0xdeadbeef as *mut u64) = 42;
+    // };
+
+	// invoke a breakpoint exception
+    // x86_64::instructions::interrupts::int3();
+
+    // fn stack_overflow() {
+    //     stack_overflow(); // for each recursion, the return address is pushed
+    // }
+
+    // uncomment line below to trigger a stack overflow
+    // stack_overflow();
 
 	#[cfg(test)]
 	test_main();
 
+    println!("It did not crash!");
 
     loop {}
 }
-
 
 /// This function is called on panic.
 #[cfg(not(test))]

@@ -3,13 +3,16 @@ use lazy_static::lazy_static;
 use spin::Mutex;
 use volatile::Volatile;
 
+#[cfg(test)]
+use crate::{serial_print, serial_println};
+
 lazy_static! {
     /// A global `Writer` instance that can be used for printing to the VGA text buffer.
     ///
     /// Used by the `print!` and `println!` macros.
     pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
         column_position: 0,
-        color_code: ColorCode::new(Color::Yellow, Color::Black),
+        color_code: ColorCode::new(Color::Cyan, Color::Black),
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
     });
 }
@@ -168,4 +171,34 @@ macro_rules! println {
 pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
     WRITER.lock().write_fmt(args).unwrap();
+}
+
+#[test_case]
+fn test_println_simple() {
+    serial_print!("test_println... ");
+    println!("test_println_simple output");
+    serial_println!("[ok]");
+}
+
+#[test_case]
+fn test_println_many() {
+    serial_print!("test_println_many... ");
+    for _ in 0..200 {
+        println!("test_println_many output");
+    }
+    serial_println!("[ok]");
+}
+
+#[test_case]
+fn test_println_output() {
+    serial_print!("test_println_output... ");
+
+    let s = "Some test string that fits on a single line";
+    println!("{}", s);
+    for (i, c) in s.chars().enumerate() {
+        let screen_char = WRITER.lock().buffer.chars[BUFFER_HEIGHT - 2][i].read();
+        assert_eq!(char::from(screen_char.ascii_character), c);
+    }
+
+    serial_println!("[ok]");
 }
