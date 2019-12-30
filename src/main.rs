@@ -12,8 +12,7 @@ use core::panic::PanicInfo;
 #[no_mangle] // don't mangle the name of this function
 pub extern "C" fn _start() -> ! {
 
-	println!("Welcome{} to {}", "!", "metallic");    
-
+	println!("\tWelcome{} to {}", ",", "metallic");    
     metallic::init();
 
 	// trigger a page fault
@@ -34,9 +33,14 @@ pub extern "C" fn _start() -> ! {
 	#[cfg(test)]
 	test_main();
 
-    println!("It did not crash!");
-
-    loop {}
+    println!("\n It did not crash!");
+	println!("\n -> ");
+    metallic::hlt_loop();
+    // loop {
+	    // deadlock and race condition
+		// use metallic::print;
+        // print!("-");      	
+    // }
 }
 
 /// This function is called on panic.
@@ -44,7 +48,7 @@ pub extern "C" fn _start() -> ! {
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     println!("{}", info);
-    loop {}
+    metallic::hlt_loop();
 }
 
 #[cfg(test)]
