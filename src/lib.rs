@@ -8,8 +8,8 @@
 
 extern crate alloc;
 
-use core::panic::PanicInfo;
-use alloc::{string::String};
+use core::{panic::PanicInfo,ops::Add,ops::Sub};
+use alloc::{string::String,vec::Vec};
 
 pub mod allocator;
 pub mod gdt;
@@ -22,27 +22,61 @@ const MARGIN: &str = "  ";
 
 pub fn init() {
     gdt::init();
-    // interrupts::init_idt();
-    // unsafe { interrupts::PICS.lock().initialize() };
-    // x86_64::instructions::interrupts::enable();
 }
 
 pub fn commander(command_string: String){
     let mut strings = command_string.split(' ');
-    if strings.next() == Some("echo") {
-        let val = strings.next();
-        // println!("{}{}",MARGIN, val);        
+    let command = strings.next();
+    if command == Some("echo") {
+        let val = command_string.replace("echo","");
+        println!("{}{}",MARGIN, val);        
+    }
+    else if command == Some("calc") {
+        let val = command_string.replace("calc","");
+        calc(val);
+    }
+    else {
+        println!("{} Oops! unrecognise command syntax",MARGIN);        
     }
 }
 
-pub fn about(){
-    info();
+pub fn calc(expression: String){
+let mut stk: Vec<f64> = Vec::new();
+    let mut err = false;
+    for tk in expression.split_whitespace() {
+      if let Ok(x) = tk.parse() {
+        stk.push(x);
+      } else {
+        err = stk.len()<2;
+        if err { println!("bug");break;}
+        let x = stk.pop().unwrap();
+        let y = stk.pop().unwrap();
+        match tk {
+          "+" => stk.push(x+y),
+          "-" => stk.push(x-y),
+          "*" => stk.push(x*y),
+          "/" => stk.push(x/y),
+          _ => {err = true; println!("bug"); break;}
+        }
+      }
+    }
+    if !err && stk.len()==1 {
+        println!("The result is {}",stk[0]);
+    }
+    else if err || stk.len()>1 {
+        println!("error");
+    }
+}
+pub fn command_list(){
     println!("{}These shell commands are defined internally.  Type `help' to see this list.",MARGIN);
-    println!("");
+    println!("exit");
+    println!("help");
+    println!("info");
+    println!("echo -value");
 }
 
 pub fn info(){
-    println!("{}Crux, version 0.1.6 - genesis (x86_64-unknown-none)",MARGIN);
+    println!("{}Crux, version 0.1.6 - genesis (x86_64-unknown-none) developed by instincts.",MARGIN);
 }
 
 pub fn test_runner(tests: &[&dyn Fn()]) {
@@ -82,6 +116,29 @@ pub fn hlt_loop() -> ! {
     }
 }
 
+pub fn preview(){
+    println!("0000  000  000  000000   00000  0000  000  000   00000   00000  000000   ");    
+    println!("0000  0000 000  00  000  00000  0000  0000 000  000 000  00000  00  000  ");    
+    println!(" 00   00000000  000000    000    00   00000000  000       000   000000   ");    
+    println!(" 00   00000000   000000   000    00   00000000  000       000    000000  ");    
+    println!("0000  000 0000  000 000   000   0000  000 0000  000 000   000   000 000  00  00");    
+    println!("0000  000  000   000000   000   0000  000  000   00000    000    000000  00  00");    
+
+    println!("");    
+    println!(" -----------------");    
+    println!("     -----------------");    
+    println!("");    
+    println!("       00000  000000    000  000 000  000          ");    
+    println!("      000 000 000  000  000  000 000  000          ");    
+    println!("     000      00000000  000  000  000000           ");    
+    println!("     000      0000000   000  000  000000           ");    
+    println!("      000 000 000  000  00000000 000  000  000 000 ");    
+    println!("       00000  000  000   000000  000  000  000 000 ");    
+    println!("");    
+    println!("                                  ----------------");    
+    println!("                                      ----------------");    
+    println!("");    
+}
 #[cfg(test)]
 use bootloader::{entry_point, BootInfo};
 

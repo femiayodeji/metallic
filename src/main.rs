@@ -68,6 +68,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     use metallic::memory::{self, BootInfoFrameAllocator};
     use x86_64::VirtAddr;
 
+    metallic::preview();
     println!("{}Welcome{} to {}",MARGIN, ",", "metallic");    
     metallic::init();
 
@@ -87,12 +88,13 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     x86_64::instructions::interrupts::enable();
     //terminal end
 
+    // metallic::calc(String::from("2 3 +"));
     //alloc sample
 
     #[cfg(test)]
     test_main();
 
-    println!("It did not crash!");
+    println!("Memory is safe!");
     unsafe {
         print!(" -> Line {}: ", COUNT);
     }
@@ -161,9 +163,9 @@ extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: &mut Interrup
                                 println!("{}end",MARGIN);
                                 metallic::exit_qemu(metallic::QemuExitCode::Failed);
                             }
-                            else if COMMAND_LINE == "help" || COMMAND_LINE == "about" {
+                            else if COMMAND_LINE == "help" {
                                 COMMAND_LINE = String::new();
-                                metallic::about();
+                                metallic::command_list();
                             }
                             else if COMMAND_LINE == "info" {
                                 COMMAND_LINE = String::new();
