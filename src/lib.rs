@@ -8,7 +8,7 @@
 
 extern crate alloc;
 
-use core::{panic::PanicInfo,ops::Add,ops::Sub};
+use core::{panic::PanicInfo};
 use alloc::{string::String,vec::Vec};
 
 pub mod allocator;
@@ -35,12 +35,89 @@ pub fn commander(command_string: String){
         let val = command_string.replace("calc","");
         calc(val);
     }
+    else if command == Some("compute") {
+        let val = command_string.replace("compute","");
+        compute(val);
+    }
     else {
         println!("{} Oops! unrecognise command syntax",MARGIN);        
     }
 }
 
 pub fn calc(expression: String){
+    print!("{} = ", expression);
+    let postfix_expression = to_postfix(expression);
+    compute(postfix_expression);
+}
+
+pub fn to_postfix(expression: String) -> String{
+    let mut postfix: String = String::new();
+    let mut op_stack: Vec<char> = Vec::new();
+    let mut operator = ' ';
+    for tk in expression.split_whitespace() {
+        let token = tk.chars().next().unwrap();
+        match tk.parse::<f64>() {
+            Ok(n) => {
+                postfix.push(' ');
+                postfix.push(token);
+            },
+            _ => {
+                if op_stack.len() == 0 {
+                    op_stack.push(token);
+                } 
+                else if precedence(token) > precedence(op_stack[op_stack.len()-1]) || op_stack[op_stack.len()-1] == '(' {
+                    op_stack.push(token);
+                }
+                else{
+                    loop {
+                        if precedence(token) >= precedence(op_stack[op_stack.len()-1]){
+                            break;
+                        }
+                        operator = op_stack.pop().unwrap();
+                        postfix.push(' ');
+                        postfix.push(operator);
+                    }
+                }
+                if token == ')' {
+                    loop {
+                        if op_stack[op_stack.len()-1] == '('{
+                            operator = op_stack.pop().unwrap();
+                            break;
+                        }
+                        operator = op_stack.pop().unwrap();
+                        postfix.push(' ');
+                        postfix.push(operator);
+                    }
+                }
+            }
+        }
+    }
+    //empty op_stack
+    loop {
+        if op_stack.len() < 1{
+            break;
+        }
+        operator = op_stack.pop().unwrap();
+        postfix.push(' ');
+        postfix.push(operator);
+    }
+    return postfix;
+}
+
+pub fn precedence(c: char) -> i8{ 
+    let mut p = -1;
+    match c {
+      '+' => {p = 1;},
+      '-' => {p = 1;},
+      '*' => {p = 2;},
+      '/' => {p = 2;},
+      '^' => {p = 3;},
+      _ => {p=0;}
+    }
+    return p; 
+} 
+
+pub fn compute(expression: String){
 let mut stk: Vec<f64> = Vec::new();
     let mut err = false;
     for tk in expression.split_whitespace() {
@@ -48,31 +125,34 @@ let mut stk: Vec<f64> = Vec::new();
         stk.push(x);
       } else {
         err = stk.len()<2;
-        if err { println!("bug");break;}
-        let x = stk.pop().unwrap();
+        if err { break; }
         let y = stk.pop().unwrap();
+        let x = stk.pop().unwrap();
         match tk {
           "+" => stk.push(x+y),
           "-" => stk.push(x-y),
           "*" => stk.push(x*y),
           "/" => stk.push(x/y),
-          _ => {err = true; println!("bug"); break;}
+          _ => {err = true; break;}
         }
       }
     }
     if !err && stk.len()==1 {
-        println!("The result is {}",stk[0]);
+        println!(" {} ", stk[0]);
     }
     else if err || stk.len()>1 {
         println!("error");
     }
 }
+
 pub fn command_list(){
     println!("{}These shell commands are defined internally.  Type `help' to see this list.",MARGIN);
     println!("exit");
     println!("help");
     println!("info");
     println!("echo -value");
+    println!("calc -INFIX expression");
+    println!("compute -POSTFIX expression");
 }
 
 pub fn info(){

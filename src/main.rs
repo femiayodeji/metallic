@@ -80,7 +80,15 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
     // allocate a number on the heap
     let heap_value = Box::new(41);
-    println!("heap_value at {:p}", heap_value);
+    // println!("heap_value at {:p}", heap_value);
+
+    //simulate stack overflow
+    // fn stack_overflow() {
+    //     stack_overflow(); // for each recursion, the return address is pushed
+    // }
+
+    // uncomment line below to trigger a stack overflow
+    // stack_overflow();
 
     // terminal start
     init_idt();
@@ -88,8 +96,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     x86_64::instructions::interrupts::enable();
     //terminal end
 
-    // metallic::calc(String::from("2 3 +"));
-    //alloc sample
+    // metallic::to_postfix(String::from("( 2 + 4 )"));
 
     #[cfg(test)]
     test_main();
