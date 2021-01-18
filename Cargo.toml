@@ -2,7 +2,7 @@
 name = "metallic"
 version = "0.1.6"
 authors = ["femi ayodeji <femidotayodeji@gmail.com>"]
-edition = "2018"
+edition = "2019"
 
 [[test]]
 name = "should_panic"
